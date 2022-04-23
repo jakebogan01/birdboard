@@ -20,7 +20,7 @@ class ProjectTest extends TestCase
             'description' => $this->faker->sentence()
         ];
 
-        $this->post('/projects', $fields);
+        $this->post('/projects', $fields)->assertRedirect('/projects');
 
         $this->assertDatabaseHas('projects', $fields);
 
