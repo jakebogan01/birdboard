@@ -8,9 +8,8 @@ Route::get('/', function () {
 });
 
 Route::get('/projects', function () {
-    return view('projects', [
-        'projects' => Project::all()
-    ]);
+    $projects = Project::all();
+    return view('projects.index', compact('projects'));
 });
 
 Route::post('/projects', function () {
