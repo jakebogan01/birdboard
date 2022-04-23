@@ -1,17 +1,12 @@
 <?php
 
-use App\Models\Project;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProjectsController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/projects', function () {
-    $projects = Project::all();
-    return view('projects.index', compact('projects'));
-});
+Route::get('/projects', [ProjectsController::class, 'index']);
 
-Route::post('/projects', function () {
-    Project::create(request(['title', 'description']));
-});
+Route::post('/projects', [ProjectsController::class, 'store']);
