@@ -26,4 +26,9 @@ class ProjectTest extends TestCase
 
         $this->get('/projects')->assertSee($fields['title']);
     }
+
+    public function testAProjectRequiresATitle()
+    {
+        $this->post('/projects', [])->assertSessionHasErrors('title');
+    }
 }
