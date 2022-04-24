@@ -12,24 +12,15 @@ use Illuminate\Routing\Redirector;
 
 class ProjectsController extends Controller
 {
-    /**
-     * @return Application|Factory|View
-     */
     public function index()
     {
         $projects = Project::all();
         return view('projects.index', compact('projects'));
     }
 
-    /**
-     * @param Request $request
-     * @return Application|RedirectResponse|Redirector
-     */
-    public function store(Request $request)
+    public function store()
     {
-        $validated = $request->validate([
-            'title' => 'bail|required|unique:posts|max:255'
-        ]);
+        request()->validate(['title' => 'required']);
 
         Project::create(request(['title', 'description']));
 
