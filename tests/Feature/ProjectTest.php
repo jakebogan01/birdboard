@@ -14,8 +14,6 @@ class ProjectTest extends TestCase
 
     public function testAUserCanCreateAProject()
     {
-        $this->withoutExceptionHandling();
-
         $fields = [
             'title' => $this->faker->word(),
             'description' => $this->faker->sentence()
@@ -32,7 +30,7 @@ class ProjectTest extends TestCase
     {
         $project = Project::factory()->create();
 
-        $this->get('/projects/' . $project->id)
+        $this->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
     }
