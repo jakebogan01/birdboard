@@ -28,6 +28,15 @@ class ProjectTest extends TestCase
         $this->get('/projects')->assertSee($fields['title']);
     }
 
+    public function testAUserCanViewAProject()
+    {
+        $project = Project::factory()->create();
+
+        $this->get('/projects/' . $project->id)
+            ->assertSee($project->title)
+            ->assertSee($project->description);
+    }
+
     public function testAProjectRequiresATitle()
     {
         $fields = Project::factory()->raw([
