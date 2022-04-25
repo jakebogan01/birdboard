@@ -11,4 +11,4 @@ Route::get('/projects', [ProjectsController::class, 'index']);
 
 Route::post('/projects', [ProjectsController::class, 'store']);
 
-Route::get('/projects/{id}', [ProjectsController::class, 'view']);
+Route::get('/projects/{project}', [ProjectsController::class, 'show']);
