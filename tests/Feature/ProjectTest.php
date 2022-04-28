@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Project;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,22 +13,37 @@ class ProjectTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
+    public function testOnlyAuthenticatedUsersCanCreateProjects()
+    {
+        $fields = Project::factory()->raw();
+
+        $this->post('/projects', $fields)->assertRedirect('login');
+    }
+
     public function testAUserCanCreateAProject()
     {
+        $user = User::factory()->create();
+
         $fields = [
             'title' => $this->faker->word(),
             'description' => $this->faker->sentence()
         ];
 
-        $this->post('/projects', $fields)->assertRedirect('/projects');
+        $this->be($user)
+            ->post('/projects', $fields)
+            ->assertRedirect('/projects');
 
         $this->assertDatabaseHas('projects', $fields);
 
-        $this->get('/projects')->assertSee($fields['title']);
+        $this->get('/projects')
+            ->assertOk()
+            ->assertSee($fields['title']);
     }
 
     public function testAUserCanViewAProject()
     {
+        $this->actingAs(User::factory()->create());
+
         $project = Project::factory()->create();
 
         $this->get($project->path())
@@ -37,6 +53,8 @@ class ProjectTest extends TestCase
 
     public function testAProjectRequiresATitle()
     {
+        $this->actingAs(User::factory()->create());
+
         $fields = Project::factory()->raw([
             'title' => ''
         ]);
@@ -46,10 +64,13 @@ class ProjectTest extends TestCase
 
     public function testAProjectRequiresADescription()
     {
+        $this->actingAs(User::factory()->create());
+
         $fields = Project::factory()->raw([
             'description' => ''
         ]);
 
-        $this->post('/projects', $fields)->assertSessionHasErrors('description');
+        $this->post('/projects', $fields)
+            ->assertSessionHasErrors('description');
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Routing\Redirector;
 
 class ProjectsController extends Controller
@@ -25,13 +26,19 @@ class ProjectsController extends Controller
 
     public function store()
     {
-        $attributes = request()->validate([
+
+        // validate
+        request()->validate([
             'title' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ]);
 
-        Project::create($attributes);
+        Project::create([
+            'owner_id' => auth()->user()->id,
+            'title' => request('title'),
+            'description' => request('description')
+        ]);
 
-        return redirect('projects');
+        return redirect('/projects');
     }
 }
