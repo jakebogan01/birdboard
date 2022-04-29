@@ -17,7 +17,8 @@ class ProjectTest extends TestCase
     {
         $fields = Project::factory()->raw();
 
-        $this->post('/projects', $fields)->assertRedirect('login');
+        $this->post('/projects', $fields)
+            ->assertRedirect('login');
     }
 
     public function testAUserCanCreateAProject()
@@ -73,17 +74,5 @@ class ProjectTest extends TestCase
 
         $this->post('/projects', $fields)
             ->assertSessionHasErrors('description');
-    }
-
-    public function testAProjectRequiresAOwner()
-    {
-        $this->actingAs(User::factory()->create());
-
-        $fields = Project::factory()->raw([
-            'owner_id' => null
-        ]);
-
-        $this->post('/projects', $fields)
-            ->assertSessionHasErrors('owner_id');
     }
 }

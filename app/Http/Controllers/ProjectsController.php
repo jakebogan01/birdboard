@@ -28,17 +28,15 @@ class ProjectsController extends Controller
     {
 
         // validate
-        request()->validate([
+        $attributes = request()->validate([
             'title' => 'required',
             'description' => 'required',
             'owner_id' => 'required',
         ]);
 
-        Project::create([
-            'owner_id' => auth()->user()->id,
-            'title' => request('title'),
-            'description' => request('description')
-        ]);
+        $attributes['owner_id'] = auth()->id();
+
+        Project::create($attributes);
 
         return redirect('/projects');
     }
