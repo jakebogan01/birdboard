@@ -13,11 +13,25 @@ class ProjectTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
-    public function testOnlyAuthenticatedUsersCanCreateProjects()
+    public function testGuestsCannotCreateProjects()
     {
         $fields = Project::factory()->raw();
 
         $this->post('/projects', $fields)
+            ->assertRedirect('login');
+    }
+
+    public function testGuestsCannotNotViewProjects()
+    {
+        $this->get('/projects')
+            ->assertRedirect('login');
+    }
+
+    public function testGuestsCannotNotViewASingleProject()
+    {
+        $project = Project::factory()->create();
+
+        $this->get($project->path())
             ->assertRedirect('login');
     }
 
@@ -42,7 +56,7 @@ class ProjectTest extends TestCase
             ->assertSee($fields['title']);
     }
 
-    public function testAUserCanViewAProject()
+    public function testAUserCanViewTheirProject()
     {
         $this->actingAs(User::factory()->create());
 
@@ -51,6 +65,16 @@ class ProjectTest extends TestCase
         $this->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
+    }
+
+    public function testAnAuthenticatedUserCannotViewTheProjectsOfOthers()
+    {
+        $this->be(User::factory()->create());
+
+        $project = Project::factory()->create();
+
+        $this->get($project->path())
+            ->assertStatus(403);
     }
 
     public function testAProjectRequiresATitle()
