@@ -31,6 +31,7 @@ class ProjectsController extends Controller
         request()->validate([
             'title' => 'required',
             'description' => 'required',
+            'owner_id' => 'required',
         ]);
 
         Project::create([

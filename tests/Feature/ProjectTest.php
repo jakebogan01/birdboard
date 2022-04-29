@@ -26,7 +26,8 @@ class ProjectTest extends TestCase
 
         $fields = [
             'title' => $this->faker->word(),
-            'description' => $this->faker->sentence()
+            'description' => $this->faker->sentence(),
+            'owner_id' => $user->id
         ];
 
         $this->be($user)
@@ -72,5 +73,17 @@ class ProjectTest extends TestCase
 
         $this->post('/projects', $fields)
             ->assertSessionHasErrors('description');
+    }
+
+    public function testAProjectRequiresAOwner()
+    {
+        $this->actingAs(User::factory()->create());
+
+        $fields = Project::factory()->raw([
+            'owner_id' => null
+        ]);
+
+        $this->post('/projects', $fields)
+            ->assertSessionHasErrors('owner_id');
     }
 }
