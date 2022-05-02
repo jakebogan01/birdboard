@@ -8,30 +8,25 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ProjectTest extends TestCase
+class ManageProjectTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;
 
-    public function testGuestsCannotCreateProjects()
-    {
-        $fields = Project::factory()->raw();
-
-        $this->post('/projects', $fields)
-            ->assertRedirect('login');
-    }
-
-    public function testGuestsCannotNotViewProjects()
-    {
-        $this->get('/projects')
-            ->assertRedirect('login');
-    }
-
-    public function testGuestsCannotNotViewASingleProject()
+    public function testGuestsCannotManageProjects()
     {
         $project = Project::factory()->create();
 
+        $this->get('/projects')
+            ->assertRedirect('login');
+
+        $this->get('/projects/create')
+            ->assertRedirect('login');
+
         $this->get($project->path())
+            ->assertRedirect('login');
+
+        $this->post('/projects', $project->toArray())
             ->assertRedirect('login');
     }
 
@@ -48,6 +43,9 @@ class ProjectTest extends TestCase
         $this->be($user)
             ->post('/projects', $fields)
             ->assertRedirect('/projects');
+
+        $this->get('/projects/create')
+            ->assertStatus(200);
 
         $this->assertDatabaseHas('projects', $fields);
 
